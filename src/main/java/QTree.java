@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QTree {
@@ -71,8 +70,8 @@ public class QTree {
         return cur;
     }
 
-    public Node findNodeByCoords(double x, double y){
-        return this.findNodeByCoords(this.root, x, y);
+    public Node findNodeByCoords(Point point){
+        return this.findNodeByCoords(this.root, point.x, point.y);
     }
 
     private Node findNodeByCoords(Node node, double x, double y) {
@@ -103,8 +102,8 @@ public class QTree {
 
     public static void main(String[] args) {
         QTree qt = new QTree(1,20);
-        qt.findNodeByCoords(16.6,15);
-        qt.findNodeByCoords(2,4);
+        qt.findNodeByCoords(new Point(16.6,15));
+        qt.findNodeByCoords(new Point(2,4));
 
         qt.merge(qt.root.children.get(0));
         qt.display(qt.root);
