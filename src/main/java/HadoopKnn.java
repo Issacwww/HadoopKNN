@@ -26,6 +26,7 @@ public class HadoopKnn {
         String inputPath = args[0], outputPath = args[1];
         int K = Integer.parseInt(args[2]), N = Integer.parseInt(args[3]), R = Integer.parseInt(args[5]);
         double S = Double.parseDouble(args[4]);
+        conf.setInt("K", K);
         conf.setInt("N", N);
         conf.setDouble("S", S);
         LOG.debug("N:"+N+"R:"+R);

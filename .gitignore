@@ -3,11 +3,12 @@
 ##############################
 .mtj.tmp/
 *.class
-*.jar
+.jar
 *.war
 *.ear
 *.nar
 hs_err_pid*
+!HadoopKnn.jar
 
 ##############################
 ## Maven
