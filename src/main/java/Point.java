@@ -1,5 +1,4 @@
 import org.apache.hadoop.io.ObjectWritable;
-import org.apache.hadoop.io.Writable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -14,7 +13,11 @@ public class Point extends ObjectWritable {
         this.x = x;
         this.y = y;
     }
-
+    public Point(String pointStr){
+        String[] coords = pointStr.substring(1,pointStr.length()-1).split(",");
+        this.x = Double.parseDouble(coords[0]);
+        this.y = Double.parseDouble(coords[1]);
+    }
     @Override
     public String toString() {
         return "("+x+","+y+")";
@@ -45,5 +48,10 @@ public class Point extends ObjectWritable {
         x = dataInput.readDouble();
         y = dataInput.readDouble();
 
+    }
+
+    public static void main(String[] args) {
+        Point p = new Point("(1.349,5.123)");
+        System.out.println(p);
     }
 }

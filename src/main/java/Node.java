@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Node {
@@ -21,6 +22,12 @@ public class Node {
         this.isLeave = false;
     }
 
+    public void parsePointsFromString(String pointsString) throws IOException {
+        String[] pointStr = pointsString.split("#");
+        for(String point:pointStr)
+            this.points.add(new Point(point));
+
+    }
     public String getParentId() {
         return parentId;
     }
@@ -31,14 +38,19 @@ public class Node {
 
     @Override
     public String toString() {
-        StringBuilder childrenStr = new StringBuilder("[ ");
-        for(Node child :children)
-            childrenStr.append("'" + child.id + "', ");
-        childrenStr.append("]");
-        StringBuilder pointsStr = new StringBuilder("[");
-        for(Point point :points)
-            pointsStr.append(point);
-        pointsStr.append("]");
+        StringBuilder childrenStr = new StringBuilder("["),pointsStr = new StringBuilder("[");
+        if(!children.isEmpty()) {
+            for (Node child : children)
+                childrenStr.append("'" + child.id + "',");
+            childrenStr.replace(childrenStr.length() - 1, childrenStr.length(), "]");
+        }else
+            childrenStr.append("]");
+        if(!points.isEmpty()) {
+            for (Point point : points)
+                pointsStr.append(point + "#");
+            pointsStr.replace(pointsStr.length() - 1, pointsStr.length(), "]");
+        }else
+            pointsStr.append("]");
         return "Node {" +
                 "x=" + x +
                 ", y=" + y +

@@ -25,6 +25,6 @@ public class PointArrayWritable extends ArrayWritable {
     }
     @Override
     public String toString() {
-        return StringUtils.join(points(), ",");
+        return StringUtils.join(points(), "#");
     }
 }

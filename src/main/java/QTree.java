@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QTree {
@@ -42,8 +43,10 @@ public class QTree {
         node.children.add(x2);
         node.children.add(x3);
     }
-
-    public void display(Node node){
+    public void display(){
+        display(this.root);
+    }
+    private void display(Node node){
         if(node.isLeave){
             System.out.println(node);
             return;
@@ -60,6 +63,8 @@ public class QTree {
         Node cur = this.root;
         int curIdx = 1;
         while(curIdx < id.length()){
+            if(cur.children.isEmpty())
+                return null;
             cur = cur.children.get(Character.getNumericValue(id.charAt(curIdx)));
             curIdx++;
         }
@@ -85,6 +90,7 @@ public class QTree {
         return findNodeByCoords(node.children.get(3), x, y);
     }
 
+
     public void merge(Node node){
         for(Node child: node.children){
             if (child.points.isEmpty() && !child.isLeave)
@@ -94,6 +100,27 @@ public class QTree {
         }
         node.isLeave = true;
         node.children.clear();
+    }
+
+    public HashMap<String, String> getLeavesPoints(boolean removePoints) {
+        HashMap<String, String> res = new HashMap<>();
+        getLeaves(this.root, res, removePoints);
+        return res;
+    }
+
+    private void getLeaves(Node node, HashMap<String, String> res, boolean removePoints) {
+        if(node.isLeave){
+            StringBuilder pointsStr = new StringBuilder();
+            for (Point point : node.points)
+                pointsStr.append(point + "#");
+            res.put(node.id, pointsStr.substring(0,pointsStr.length()-1));
+            if(removePoints)
+                node.points.clear();
+            return;
+        }
+        for(Node child: node.children){
+            getLeaves(child, res, removePoints);
+        }
     }
 
     public static void main(String[] args) {
@@ -123,5 +150,6 @@ public class QTree {
 //        qt2.display(qt2.root);
 
     }
+
 
 }
