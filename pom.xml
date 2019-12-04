@@ -68,12 +68,26 @@
         </resources>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>HadoopKnn</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -93,7 +107,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                 </transformer>
                             </transformers>
-                            <finalName>project1</finalName>
+                            <finalName>HadoopKnn</finalName>
                         </configuration>
                     </execution>
                 </executions>
