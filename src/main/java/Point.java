@@ -1,3 +1,4 @@
+import org.apache.hadoop.io.ObjectWritable;
 import org.apache.hadoop.io.Writable;
 
 import java.io.DataInput;
@@ -5,7 +6,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Point implements Writable {
+public class Point extends ObjectWritable {
     double x;
     double y;
     public Point(){}

@@ -1,0 +1,2 @@
+public class CellCountMapper2 {
+}

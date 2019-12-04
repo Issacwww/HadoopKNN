@@ -1,0 +1,2 @@
+public class CellCountReducer2 {
+}

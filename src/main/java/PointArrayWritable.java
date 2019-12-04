@@ -12,9 +12,9 @@ public class PointArrayWritable extends ArrayWritable {
         super(PointArrayWritable.class);
         int length = pointsList.size();
 
-        ObjectWritable[] points = new ObjectWritable[length];
+        Point[] points = new Point[length];
         for (int i = 0; i < length; i++) {
-            points[i] = new ObjectWritable(pointsList.get(i));
+            points[i] = pointsList.get(i);
         }
         set(points);
     }

@@ -5,22 +5,24 @@ public class Node {
     double y;
     double sideLen;
     String id;
-    private Node parent;
+    boolean isLeave;
+    private String parentId;
     ArrayList<Point> points;
     ArrayList<Node> children;
     public Node(){}
-    public Node(double x0, double y0, double sideLen, Node parent, String id){
+    public Node(double x0, double y0, double sideLen, String parent, String id){
         this.x = x0;
         this.y = y0;
         this.sideLen = sideLen;
-        this.parent = parent;
+        this.parentId = parent;
         this.id = id;
         this.points = new ArrayList<>();
         this.children = new ArrayList<>();
+        this.isLeave = false;
     }
 
-    public Node getParent() {
-        return parent;
+    public String getParentId() {
+        return parentId;
     }
 
     public int getSum() {
@@ -42,7 +44,7 @@ public class Node {
                 ", y=" + y +
                 ", sideLen=" + sideLen +
                 ", id='" + id + '\'' +
-                ", parent='" + parent.id + '\'' +
+                ", parent='" + parentId + '\'' +
                 ", children=" + childrenStr.toString() +
                 ", points=" + pointsStr.toString() +
                 "}";
