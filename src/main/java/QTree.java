@@ -113,7 +113,8 @@ public class QTree {
             StringBuilder pointsStr = new StringBuilder();
             for (Point point : node.points)
                 pointsStr.append(point + "#");
-            res.put(node.id, pointsStr.substring(0,pointsStr.length()-1));
+            if (pointsStr.length() > 0)
+                res.put(node.id, pointsStr.substring(0,pointsStr.length()-1));
             if(removePoints)
                 node.points.clear();
             return;
