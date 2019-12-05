@@ -41,9 +41,9 @@ public class HadoopKnn {
         conf.setInt("N", N);
         conf.setDouble("S", S);
 
-        /****************     STEP 1     ********************/
+        LOG.info("****************     STEP 1     ********************");
         Job job1 = Job.getInstance(conf, "Cell Counter");
-        QTree qTree = new QTree(N, S);
+
         LOG.info("Job1 setting");
         job1.setJarByClass(HadoopKnn.class);
         job1.setMapperClass(CellCountMapper.class);
@@ -62,54 +62,84 @@ public class HadoopKnn {
         job1.setOutputValueClass(PointArrayWritable.class);
         //set input and output path
         FileInputFormat.setInputPaths(job1, new Path(inputPath));
-        FileOutputFormat.setOutputPath(job1, new Path(outputPath));
+        FileOutputFormat.setOutputPath(job1, new Path(outputPath,"out1"));
 
-        LOG.info("Job1 Running...");
-        int job1Complete = job1.waitForCompletion(true) ? 0 : 1;
-        if(job1Complete == 1) {
+        if (!job1.waitForCompletion(true)) {
             LOG.error("Running Job 1 Wrong");
-            System.exit(job1Complete);
+            System.exit(1);
         }
+        QTree qTree = new QTree(N, S);
+        String mergedPoints ="data/mergedPoints";
         String mergedQTree = treeMerger(qTree, K, conf.get("fs.defaultFS"),
-                new Path(outputPath + "/part-r-00000"),
-                new Path( "data/mergedPoints"));
+                new Path(outputPath ,"out1/part-r-00000"),
+                new Path( mergedPoints));
         conf.set("qTree", mergedQTree);
 
-        /****************     STEP 2     ********************/
+        LOG.info("****************     STEP 2     ********************");
         Job job2 = Job.getInstance(conf,"Knn in cell");
 
-
-        int job2Complete = job2.waitForCompletion(true) ? 0 : 1;
-        if(job2Complete == 1) {
+        LOG.info("job2 setting");
+        job2.setJarByClass(HadoopKnn.class);
+        job2.setMapperClass(KnnMapper.class);
+        job2.setReducerClass(KnnReducer.class);
+        job2.setNumReduceTasks(R);
+        job2.setInputFormatClass(TextInputFormat.class);
+        job2.setMapOutputKeyClass(Text.class);
+        job2.setMapOutputValueClass(Text.class);
+        job2.setOutputKeyClass(Point.class);
+        job2.setOutputValueClass(PointArrayWritable.class);
+        FileInputFormat.setInputPaths(job2, new Path(mergedPoints));
+        FileOutputFormat.setOutputPath(job2, new Path(outputPath,"out2"));
+        if (!job2.waitForCompletion(true)) {
             LOG.error("Running Job 2 Wrong");
-            System.exit(job2Complete);
+            System.exit(1);
         }
 
-        /****************     STEP 3     ********************/
-//        Job job3= Job.getInstance(conf,"Update Knn cross cells");
-//
-//
-//
-//        int job3Complete = job3.waitForCompletion(true) ? 0 : 1;
-//        if(job3Complete == 1) {
-//            LOG.error("Running Job 3 Wrong");
-//            System.exit(job3Complete);
-//        }
+        LOG.info("****************     STEP 3     ********************");
 
-        /****************     STEP 4     ********************/
+        Job job3= Job.getInstance(conf,"Update Knn cross cells");
+
+        LOG.info("job3 setting");
+        job3.setJarByClass(HadoopKnn.class);
+        job3.setMapperClass(KnnCrossCellMapper.class);
+        job3.setReducerClass(KnnCrossCellReducer.class);
+        job3.setNumReduceTasks(1);
+        job3.setInputFormatClass(TextInputFormat.class);
+        job3.setMapOutputKeyClass(Text.class);
+        job3.setMapOutputValueClass(Point.class);
+        job3.setOutputKeyClass(Text.class);
+        job3.setOutputValueClass(PointArrayWritable.class);
+        FileInputFormat.setInputPaths(job3, new Path(inputPath));
+        FileOutputFormat.setOutputPath(job3, new Path(outputPath));
+        FileOutputFormat.setOutputPath(job3, new Path(outputPath,"out3"));
+        if (!job3.waitForCompletion(true)) {
+            LOG.error("Running Job 3 Wrong");
+            System.exit(1);
+        }
+
+        LOG.info("****************     STEP 4     ********************");
+
 //        Job job4 = Job.getInstance(conf,"Integration");
-//
-//
-//
-//        int job4Complete = job4.waitForCompletion(true) ? 0 : 1;
-//        if(job4Complete == 1) {
+//        LOG.info("job4 setting");
+//        job4.setJarByClass(HadoopKnn.class);
+//        job4.setMapperClass(CellCountMapper.class);
+//        job4.setReducerClass(CellCountReducer.class);
+//        job4.setNumReduceTasks(1);
+//        job4.setInputFormatClass(TextInputFormat.class);
+//        job4.setMapOutputKeyClass(Text.class);
+//        job4.setMapOutputValueClass(Point.class);
+//        job4.setOutputKeyClass(Text.class);
+//        job4.setOutputValueClass(PointArrayWritable.class);
+//        FileInputFormat.setInputPaths(job4, new Path(inputPath));
+//        FileOutputFormat.setOutputPath(job4, new Path(outputPath));
+//        FileOutputFormat.setOutputPath(job4, new Path(outputPath,"out4"));
+//        if (!job4.waitForCompletion(true)) {
 //            LOG.error("Running Job 4 Wrong");
-//            System.exit(job4Complete);
+//            System.exit(1);
 //        }
 
         LOG.info("All jobs succeed!");
-//        System.exit(job4Complete);
-        System.exit(job2Complete);
+        System.exit(0);
 
 
     }
@@ -140,7 +170,7 @@ public class HadoopKnn {
                 toMerge.add(n.id);
             }
         }
-        LOG.info("Before Merge");
+        LOG.info("Step1 Before Merge");
         qTree.display();
         while(!toMerge.isEmpty()) {
             String id = toMerge.poll();

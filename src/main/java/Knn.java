@@ -1,22 +1,19 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Knn {
 
-    private ArrayList<Point> points;
+    private HashSet<Point> points;
     private int k;
     private HashMap<Point, PriorityQueue<PointDetail>> distance;
 
-    public Knn(ArrayList<Point> points, int k) {
+    public Knn(HashSet<Point> points, int k) {
         this.points = points;
         this.k = k;
         this.distance = new HashMap<>();
         setDistance(points, k);
     }
 
-    private void setDistance(ArrayList<Point> pointsInCell, int k){
+    private void setDistance(HashSet<Point> pointsInCell, int k){
         for(Point origin: pointsInCell){
             for(Point point: pointsInCell){
                 if (origin.equals(point)) continue;
@@ -69,19 +66,19 @@ public class Knn {
 
     public static void main(String[] args){
 
-        ArrayList<Point> test = new ArrayList<>();
-        test.add(new Point(0,0));
-        test.add(new Point(0,8));
-        test.add(new Point(0,9));
-        test.add(new Point(0,5));
-        test.add(new Point(0,4));
-        test.add(new Point(0,1));
-        test.add(new Point(0,2));
-        test.add(new Point(0,3));
-        test.add(new Point(0,6));
-        test.add(new Point(0,10));
+        HashSet<Point> test = new HashSet<>();
+        test.add(new Point("0",0,0));
+        test.add(new Point("1",0,8));
+        test.add(new Point("2",0,9));
+        test.add(new Point("3",0,5));
+        test.add(new Point("4",0,4));
+        test.add(new Point("5",0,1));
+        test.add(new Point("6",0,2));
+        test.add(new Point("7",0,3));
+        test.add(new Point("8",0,6));
+        test.add(new Point("9",0,10));
 
-        Knn neighborsList = new Knn(test,5);
+        Knn neighborsList = new Knn(test,3);
         System.out.println(neighborsList.getKnnPoints());
     }
 }

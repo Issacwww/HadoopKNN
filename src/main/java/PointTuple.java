@@ -26,11 +26,18 @@ public class PointTuple {
                 '}';
     }
 
+    public Point getOrigin() {
+        return origin;
+    }
+
+    public ArrayList<Point> getNeighbors() {
+        return neighbors;
+    }
 
     public static void main(String[] args){
-        Point o = new Point(0,0);
-        Point a = new Point(1,2);
-        Point b = new Point(3,4);
+        Point o = new Point("0",0,0);
+        Point a = new Point("1",1,2);
+        Point b = new Point("2",3,4);
 
         ArrayList<Point> test = new ArrayList<>();
         test.add(a);

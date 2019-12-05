@@ -72,22 +72,22 @@ public class QTree {
     }
 
     public Node findNodeByCoords(Point point){
-        return this.findNodeByCoords(this.root, point.x, point.y);
+        return this.findNodeByCoords(this.root, point);
     }
 
-    private Node findNodeByCoords(Node node, double x, double y) {
+    private Node findNodeByCoords(Node node, Point point) {
         if(node.isLeave) {
-            node.points.add(new Point(x, y));
+            node.points.add(point);
             return node;
         }
         double midX = node.x + node.sideLen / 2, midY =  node.y + node.sideLen / 2;
-        if(x < midX && y < midY)
-            return findNodeByCoords(node.children.get(0), x, y);
-        else if(x < midX && y >= midY)
-            return findNodeByCoords(node.children.get(1), x, y);
-        else if(x >= midX && y < midY)
-            return findNodeByCoords(node.children.get(2), x, y);
-        return findNodeByCoords(node.children.get(3), x, y);
+        if(point.x < midX && point.y < midY)
+            return findNodeByCoords(node.children.get(0), point);
+        else if(point.x < midX &&point.y >= midY)
+            return findNodeByCoords(node.children.get(1),point);
+        else if(point.x >= midX && point.y < midY)
+            return findNodeByCoords(node.children.get(2), point);
+        return findNodeByCoords(node.children.get(3), point);
     }
 
 
@@ -125,8 +125,8 @@ public class QTree {
 
     public static void main(String[] args) {
         QTree qt = new QTree(1,20);
-        qt.findNodeByCoords(new Point(16.6,15));
-        qt.findNodeByCoords(new Point(2,4));
+        qt.findNodeByCoords(new Point("0",16.6,15));
+        qt.findNodeByCoords(new Point("1",2,4));
         Gson gson = new Gson();
 
         System.out.println("Init tree");

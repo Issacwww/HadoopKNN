@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Node {
     double x;
@@ -8,7 +9,7 @@ public class Node {
     String id;
     boolean isLeave;
     private String parentId;
-    ArrayList<Point> points;
+    HashSet<Point> points;
     ArrayList<Node> children;
     public Node(){}
     public Node(double x0, double y0, double sideLen, String parent, String id){
@@ -17,7 +18,7 @@ public class Node {
         this.sideLen = sideLen;
         this.parentId = parent;
         this.id = id;
-        this.points = new ArrayList<>();
+        this.points = new HashSet<>();
         this.children = new ArrayList<>();
         this.isLeave = false;
     }
