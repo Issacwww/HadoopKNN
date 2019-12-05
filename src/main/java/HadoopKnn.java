@@ -191,7 +191,7 @@ public class HadoopKnn {
         FSDataOutputStream outputStream=fs.create(mergedPoints);
         for(Map.Entry<String, String> entry: leavesPoints.entrySet()){
             //Cassical output stream usage
-            outputStream.writeBytes(entry.getKey()+"\t"+entry.getValue());
+            outputStream.writeBytes(entry.getKey()+"\t"+entry.getValue()+"\n");
         }
         outputStream.close();
         LOG.info("End Write file into hdfs");
