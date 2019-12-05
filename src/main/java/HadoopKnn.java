@@ -171,8 +171,8 @@ public class HadoopKnn {
                 toMerge.add(n.id);
             }
         }
-        LOG.info("Step1 Before Merge");
-        qTree.display();
+//        LOG.info("Step1 Before Merge");
+//        qTree.display();
         while(!toMerge.isEmpty()) {
             String id = toMerge.poll();
             Node n = qTree.findNodeById(id);
@@ -198,8 +198,6 @@ public class HadoopKnn {
         LOG.info("Merged, transfer to gson");
         //Only save the structure
         String gsonStr = gson.toJson(qTree,QTree.class);
-        System.out.println();
-        qTree.display();
         return gsonStr;
     }
 }

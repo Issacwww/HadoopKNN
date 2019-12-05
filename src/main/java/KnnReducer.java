@@ -18,7 +18,6 @@ public class KnnReducer extends Reducer<Text, Text, Point, Text> {
             String[] points = value.toString().split("#");
             for (String pointStr:points) {
                 Point point = new Point(pointStr);
-                System.out.println(point);
                 pointsInCell.add(point);
             }
         }
