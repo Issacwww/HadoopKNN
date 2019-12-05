@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class KnnReducer extends Reducer<Text, Text, Point, PointArrayWritable> {
+public class KnnReducer extends Reducer<Text, Text, Point, Text> {
     private int K;
     protected void setup(Context context) throws IOException,InterruptedException {
         Configuration conf = context.getConfiguration();
@@ -25,7 +25,7 @@ public class KnnReducer extends Reducer<Text, Text, Point, PointArrayWritable> {
         Knn knn = new Knn(pointsInCell, K);
         ArrayList<PointTuple> resInCell = knn.getKnnPoints();
         for(PointTuple res:resInCell){
-            context.write(res.getOrigin(),new PointArrayWritable(res.getNeighbors()));
+            context.write(res.getOrigin(),new Text(key.toString() + "#" + new PointArrayWritable(res.getNeighbors()).toString()));
         }
     }
 }

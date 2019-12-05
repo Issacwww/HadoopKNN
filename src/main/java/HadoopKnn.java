@@ -5,18 +5,19 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
 public class HadoopKnn {
 
@@ -87,7 +88,7 @@ public class HadoopKnn {
         job2.setMapOutputKeyClass(Text.class);
         job2.setMapOutputValueClass(Text.class);
         job2.setOutputKeyClass(Point.class);
-        job2.setOutputValueClass(PointArrayWritable.class);
+        job2.setOutputValueClass(Text.class);
         FileInputFormat.setInputPaths(job2, new Path(mergedPoints));
         FileOutputFormat.setOutputPath(job2, new Path(outputPath,"out2"));
         if (!job2.waitForCompletion(true)) {
@@ -112,10 +113,10 @@ public class HadoopKnn {
         FileInputFormat.setInputPaths(job3, new Path(inputPath));
         FileOutputFormat.setOutputPath(job3, new Path(outputPath));
         FileOutputFormat.setOutputPath(job3, new Path(outputPath,"out3"));
-        if (!job3.waitForCompletion(true)) {
-            LOG.error("Running Job 3 Wrong");
-            System.exit(1);
-        }
+//        if (!job3.waitForCompletion(true)) {
+//            LOG.error("Running Job 3 Wrong");
+//            System.exit(1);
+//        }
 
         LOG.info("****************     STEP 4     ********************");
 

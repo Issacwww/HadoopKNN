@@ -1,13 +1,7 @@
-import org.apache.hadoop.io.ArrayWritable;
-import org.apache.hadoop.io.ObjectWritable;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.io.ArrayWritable;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 public class PointArrayWritable extends ArrayWritable {
     public PointArrayWritable(){
@@ -25,23 +19,9 @@ public class PointArrayWritable extends ArrayWritable {
         set(points);
     }
 
-    //TODO test required
-    public HashSet<Point> toHashSet(){
-        Point[] points = (Point[]) toArray();
-        HashSet<Point> res = new HashSet<>();
-        for (Point point: points) {
-            res.add(point);
-        }
-        return res;
-    }
-
-    public String[] points() {
-        return toStrings();
-    }
-
     @Override
     public String toString() {
-        return StringUtils.join(points(), "#");
+        return StringUtils.join(toStrings(), "#");
     }
 
 }
