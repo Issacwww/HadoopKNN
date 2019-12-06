@@ -2,13 +2,9 @@ import java.util.*;
 
 public class Knn {
 
-    private HashSet<Point> points;
-    private int k;
     private HashMap<Point, PriorityQueue<PointDetail>> distance;
 
     public Knn(HashSet<Point> points, int k) {
-        this.points = points;
-        this.k = k;
         this.distance = new HashMap<>();
         setDistance(points, k);
     }

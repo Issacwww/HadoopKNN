@@ -20,7 +20,7 @@ public class IntegrationMapper extends Mapper <Object, Text, Text, Text>{
         Point originPoint = new Point(inputs[0]);
         String[] cellIdAndNeighbors = inputs[1].split("#");
         HashSet<Point> pointList = new HashSet<>();
-        for (int i = 1; i < K; i++) {
+        for (int i = 1; i <= K; i++) {
             Point point = new Point(cellIdAndNeighbors[i]);
             pointList.add(point);
         }

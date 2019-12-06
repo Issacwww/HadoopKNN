@@ -22,12 +22,12 @@ import java.util.Queue;
 public class HadoopKnn {
 
     private static final Logger LOG = Logger.getLogger(HadoopKnn.class);
+
     /**
-     *
      * @param args: <inputPath>, <outputPath>, <K neighbors>, <N levels>, <S sideLen> <R reduceTasks>
      */
     public static void main(String[] args) throws Exception {
-        if(args.length < 6){
+        if (args.length < 6) {
             System.out.println("Please input valid arguments: <inputPath>, <outputPath>, <K neighbors>, " +
                     "<N levels>, <S sideLen> <R reduceTasks>");
             System.exit(1);
@@ -63,21 +63,21 @@ public class HadoopKnn {
         job1.setOutputValueClass(PointArrayWritable.class);
         //set input and output path
         FileInputFormat.setInputPaths(job1, new Path(inputPath));
-        FileOutputFormat.setOutputPath(job1, new Path(outputPath,"out1"));
+        FileOutputFormat.setOutputPath(job1, new Path(outputPath, "out1"));
 
         if (!job1.waitForCompletion(true)) {
             LOG.error("Running Job 1 Wrong");
             System.exit(1);
         }
         QTree qTree = new QTree(N, S);
-        String mergedPoints ="data/mergedPoints";
+        String mergedPoints = "data/mergedPoints";
         String mergedQTree = treeMerger(qTree, K, conf.get("fs.defaultFS"),
-                new Path(outputPath ,"out1/part-r-00000"),
-                new Path( mergedPoints));
+                new Path(outputPath, "out1/part-r-00000"),
+                new Path(mergedPoints));
         conf.set("qTree", mergedQTree);
 
         LOG.info("****************     STEP 2     ********************");
-        Job job2 = Job.getInstance(conf,"Knn in cell");
+        Job job2 = Job.getInstance(conf, "Knn in cell");
 
         LOG.info("job2 setting");
         job2.setJarByClass(HadoopKnn.class);
@@ -90,7 +90,7 @@ public class HadoopKnn {
         job2.setOutputKeyClass(Point.class);
         job2.setOutputValueClass(Text.class);
         FileInputFormat.setInputPaths(job2, new Path(mergedPoints));
-        FileOutputFormat.setOutputPath(job2, new Path(outputPath,"out2"));
+        FileOutputFormat.setOutputPath(job2, new Path(outputPath, "out2"));
         if (!job2.waitForCompletion(true)) {
             LOG.error("Running Job 2 Wrong");
             System.exit(1);
@@ -98,7 +98,7 @@ public class HadoopKnn {
 
         LOG.info("****************     STEP 3     ********************");
 
-        Job job3= Job.getInstance(conf,"Update Knn cross cells");
+        Job job3 = Job.getInstance(conf, "Update Knn cross cells");
 
         LOG.info("job3 setting");
         job3.setJarByClass(HadoopKnn.class);
@@ -110,8 +110,8 @@ public class HadoopKnn {
         job3.setMapOutputValueClass(Text.class);
         job3.setOutputKeyClass(Text.class);
         job3.setOutputValueClass(Text.class);
-        FileInputFormat.setInputPaths(job3, new Path(outputPath,"out2/part*"));
-        FileOutputFormat.setOutputPath(job3, new Path(outputPath,"out3"));
+        FileInputFormat.setInputPaths(job3, new Path(outputPath, "out2/part*"));
+        FileOutputFormat.setOutputPath(job3, new Path(outputPath, "out3"));
         if (!job3.waitForCompletion(true)) {
             LOG.error("Running Job 3 Wrong");
             System.exit(1);
@@ -119,7 +119,7 @@ public class HadoopKnn {
 
         LOG.info("****************     STEP 4     ********************");
 
-        Job job4 = Job.getInstance(conf,"Integration");
+        Job job4 = Job.getInstance(conf, "Integration");
         LOG.info("Job4 setting");
         job4.setJarByClass(HadoopKnn.class);
         job4.setMapperClass(IntegrationMapper.class);
@@ -130,8 +130,8 @@ public class HadoopKnn {
         job4.setMapOutputValueClass(Text.class);
         job4.setOutputKeyClass(Point.class);
         job4.setOutputValueClass(PointArrayWritable.class);
-        FileInputFormat.setInputPaths(job4, new Path(outputPath,"out3/part*"));
-        FileOutputFormat.setOutputPath(job4, new Path(outputPath,"out4"));
+        FileInputFormat.setInputPaths(job4, new Path(outputPath, "out3/part*"));
+        FileOutputFormat.setOutputPath(job4, new Path(outputPath, "out4"));
         if (!job4.waitForCompletion(true)) {
             LOG.error("Running Job 4 Wrong");
             System.exit(1);
@@ -142,6 +142,7 @@ public class HadoopKnn {
 
 
     }
+
     public static String treeMerger(QTree qTree, int K, String hdfsuri, Path stepOneOut, Path mergedPoints) throws IOException {
         Configuration conf = new Configuration();
         Gson gson = new Gson();
@@ -158,26 +159,26 @@ public class HadoopKnn {
         //Init input stream
         FSDataInputStream inputStream = fs.open(stepOneOut);
         //Classical input stream usage
-        String out= IOUtils.toString(inputStream, "UTF-8");
+        String out = IOUtils.toString(inputStream, "UTF-8");
         String[] lines = out.split("\n");
         Queue<String> toMerge = new LinkedList<>();
-        for(String line : lines){
+        for (String line : lines) {
             String[] tmp = line.split("\t");
             Node n = qTree.findNodeById(tmp[0]);
             n.parsePointsFromString(tmp[1]);
-            if(n.getSum() <= K){
+            if (n.getSum() <= K) {
                 toMerge.add(n.id);
             }
         }
 //        LOG.info("Step1 Before Merge");
 //        qTree.display();
-        while(!toMerge.isEmpty()) {
+        while (!toMerge.isEmpty()) {
             String id = toMerge.poll();
             Node n = qTree.findNodeById(id);
             if (n != null) {
                 qTree.merge(qTree.findNodeById(n.getParentId()));
                 Node parent = qTree.findNodeById(n.getParentId());
-                if (parent.getSum() <= K){
+                if (parent.getSum() <= K) {
                     toMerge.add(parent.id);
                 }
             }
@@ -186,16 +187,16 @@ public class HadoopKnn {
         HashMap<String, String> leavesPoints = qTree.getLeavesPoints(true);
         //TODO: write the data to HDFS
         //Init output stream
-        FSDataOutputStream outputStream=fs.create(mergedPoints);
-        for(Map.Entry<String, String> entry: leavesPoints.entrySet()){
+        FSDataOutputStream outputStream = fs.create(mergedPoints);
+        for (Map.Entry<String, String> entry : leavesPoints.entrySet()) {
             //Cassical output stream usage
-            outputStream.writeBytes(entry.getKey()+"\t"+entry.getValue()+"\n");
+            outputStream.writeBytes(entry.getKey() + "\t" + entry.getValue() + "\n");
         }
         outputStream.close();
         LOG.info("End Write file into hdfs");
         LOG.info("Merged, transfer to gson");
         //Only save the structure
-        String gsonStr = gson.toJson(qTree,QTree.class);
+        String gsonStr = gson.toJson(qTree, QTree.class);
         return gsonStr;
     }
 }
