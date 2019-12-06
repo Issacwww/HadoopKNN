@@ -31,19 +31,35 @@ public class KnnCrossCellMapper extends Mapper<Object, Text, Text, Text> {
             neighbors = neighbors.concat("#" + cellIdAndNeighbors[i]);
         }
         // check boundary in 8 direction
-        HashSet<Node> neighborNodes = getAllCellIds(originPoint, farthest);
-        boolean notCrossBoundary = true;
-        for (Node node : neighborNodes) {
-            if (node.id != originNode.id) {
-                notCrossBoundary = false;
-                cellId.set(node.id);
-                context.write(cellId, new Text(originPoint.toString() + neighbors + "#" + notCrossBoundary));
-            }
-        }
+//        HashSet<Node> neighborNodes = getAllCellIds(originPoint, farthest);
+//        boolean notCrossBoundary = true;
+        boolean notCrossBoundary = notCrossBoundary(originPoint, farthest, originNode);
         if (notCrossBoundary) {
             cellId.set(originNode.id);
             context.write(cellId, new Text(originPoint.toString() + neighbors + "#" + notCrossBoundary));
+        } else {
+            HashSet<String> neighborNodes = qTree.findAdjacentCells(originNode);
+            for (String node : neighborNodes) {
+                if (!node.equals(originNode.id)) {
+                    notCrossBoundary = false;
+                    cellId.set(node);
+                    context.write(cellId, new Text(originPoint.toString() + neighbors + "#" + notCrossBoundary));
+                }
+            }
         }
+    }
+
+    private boolean notCrossBoundary(Point originPoint, Point farthest, Node originNode){
+        double radius = originPoint.getEuclideanDistance(farthest);
+        double px = originPoint.x;
+        double py = originPoint.y;
+        double x = originNode.x;
+        double y = originNode.y;
+        double len = originNode.sideLen;
+        return (x<px-radius)
+                && (x+len > px+radius)
+                && (y<py-radius)
+                && (y+len > py+radius);
     }
 
     private HashSet<Node> getAllCellIds(Point originPoint, Point farthest) {

@@ -1,15 +1,16 @@
 import com.google.gson.Gson;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class QTree {
     int levels;
     double sideLen;
     Node root;
-    public QTree(int levels, double sideLen){
+
+    public QTree(int levels, double sideLen) {
         this.levels = levels + 1;
         this.sideLen = sideLen;
-        this.root = new Node(0,0, sideLen, "0", "0");
+        this.root = new Node(0, 0, sideLen, "0", "0");
         this.recursive_subdivide(this.root);
     }
 
@@ -42,27 +43,29 @@ public class QTree {
         node.children.add(x2);
         node.children.add(x3);
     }
-    public void display(){
+
+    public void display() {
         display(this.root);
     }
-    private void display(Node node){
-        if(node.isLeave){
+
+    private void display(Node node) {
+        if (node.isLeave) {
             System.out.println(node);
             return;
         }
         System.out.println(node);
-        for(Node child: node.children){
+        for (Node child : node.children) {
             display(child);
         }
     }
 
-    public Node findNodeById(String id){
-        if(id == "0")
+    public Node findNodeById(String id) {
+        if (id == "0")
             return this.root;
         Node cur = this.root;
         int curIdx = 1;
-        while(curIdx < id.length()){
-            if(cur.children.isEmpty())
+        while (curIdx < id.length()) {
+            if (cur.children.isEmpty())
                 return null;
             cur = cur.children.get(Character.getNumericValue(id.charAt(curIdx)));
             curIdx++;
@@ -70,29 +73,29 @@ public class QTree {
         return cur;
     }
 
-    public Node findNodeByCoords(Point point){
+    public Node findNodeByCoords(Point point) {
         return this.findNodeByCoords(this.root, point);
     }
 
     private Node findNodeByCoords(Node node, Point point) {
-        if(node.isLeave) {
-            if(point.isValid())
+        if (node.isLeave) {
+            if (point.isValid())
                 node.points.add(point);
             return node;
         }
-        double midX = node.x + node.sideLen / 2, midY =  node.y + node.sideLen / 2;
-        if(point.x < midX && point.y < midY)
+        double midX = node.x + node.sideLen / 2, midY = node.y + node.sideLen / 2;
+        if (point.x < midX && point.y < midY)
             return findNodeByCoords(node.children.get(0), point);
-        else if(point.x < midX &&point.y >= midY)
-            return findNodeByCoords(node.children.get(1),point);
-        else if(point.x >= midX && point.y < midY)
+        else if (point.x < midX && point.y >= midY)
+            return findNodeByCoords(node.children.get(1), point);
+        else if (point.x >= midX && point.y < midY)
             return findNodeByCoords(node.children.get(2), point);
         return findNodeByCoords(node.children.get(3), point);
     }
 
 
-    public void merge(Node node){
-        for(Node child: node.children){
+    public void merge(Node node) {
+        for (Node child : node.children) {
             if (child.points.isEmpty() && !child.isLeave)
                 merge(child);
             node.points.addAll(child.points);
@@ -109,25 +112,81 @@ public class QTree {
     }
 
     private void getLeaves(Node node, HashMap<String, String> res, boolean removePoints) {
-        if(node.isLeave){
+        if (node.isLeave) {
             StringBuilder pointsStr = new StringBuilder();
             for (Point point : node.points)
                 pointsStr.append(point + "#");
             if (pointsStr.length() > 0)
-                res.put(node.id, pointsStr.substring(0,pointsStr.length()-1));
-            if(removePoints)
+                res.put(node.id, pointsStr.substring(0, pointsStr.length() - 1));
+            if (removePoints)
                 node.points.clear();
             return;
         }
-        for(Node child: node.children){
+        for (Node child : node.children) {
             getLeaves(child, res, removePoints);
         }
     }
 
+    public HashSet<String> findAdjacentCells(Node node) {
+        HashSet<String> res = new HashSet<>();
+        findAdjacentCells(node, res);
+        findAdjacentCells(findNodeById(node.getParentId()), res);
+        return res;
+    }
+
+    private void findAdjacentCells(Node node, HashSet<String> res) {
+        int[][] map = new int[][]{{0, 1, 2, 3}, {1, 3, 0, 2}, {2, 0, 3, 1}, {3, 2, 1, 0}};
+        int self = Character.getNumericValue(node.id.charAt(node.id.length() - 1));
+        int[] order = map[self];
+        Node[] siblings = findSiblings(node, order);
+//        if (siblings[3].isLeave) {
+//            res.add(siblings[3].id);
+//        } else {
+            findDiagonalCells(siblings[3], order, res);
+//        }
+//        if (siblings[1].isLeave) {
+//            res.add(siblings[1].id);
+//        } else {
+            findBackDiagonalCells(siblings[1], order, 2, res);
+//        }
+
+//        if (siblings[2].isLeave) {
+//            res.add(siblings[2].id);
+//        } else {
+            findBackDiagonalCells(siblings[2], order,1, res);
+//        }
+    }
+
+    private void findDiagonalCells(Node node, int[] order, HashSet<String> res) {
+        if (node.isLeave){
+            res.add(node.id);
+            return;
+        }
+        findDiagonalCells(node.children.get(order[0]),order,res);
+    }
+
+    private void findBackDiagonalCells(Node node,int[] order, int pattern, HashSet<String> res) {
+        if (node.isLeave){
+            res.add(node.id);
+            return;
+        }
+        findBackDiagonalCells(node.children.get(order[0]),order, order[pattern],res);
+        findBackDiagonalCells(node.children.get(order[pattern]),order, order[pattern],res);
+
+    }
+
+    private Node[] findSiblings(Node node, int[] order) {
+        Node[] siblings = new Node[4];
+        ArrayList<Node> children = findNodeById(node.getParentId()).children;
+        for (int i : order)
+            siblings[i] = children.get(i);
+        return siblings;
+    }
+
     public static void main(String[] args) {
-        QTree qt = new QTree(1,20);
-        qt.findNodeByCoords(new Point("0",16.6,15));
-        qt.findNodeByCoords(new Point("1",2,4));
+        QTree qt = new QTree(1, 20);
+        qt.findNodeByCoords(new Point("0", 16.6, 15));
+        qt.findNodeByCoords(new Point("1", 2, 4));
         Gson gson = new Gson();
 
         System.out.println("Init tree");

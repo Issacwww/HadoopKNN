@@ -15,7 +15,6 @@ public class IntegrationMapper extends Mapper <Object, Text, Text, Text>{
     }
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-        System.out.println(value.toString());
         String[] inputs = value.toString().split("\t");
         Point originPoint = new Point(inputs[0]);
         String[] cellIdAndNeighbors = inputs[1].split("#");
