@@ -10,12 +10,8 @@ public class PointTuple {
         this.neighbors = neighbors;
     }
 
-    private double getEuclideanDistance(Point origin, Point neighbor){
-        return Math.sqrt(Math.pow((origin.x - neighbor.x),2) + Math.pow((origin.y - neighbor.y),2));
-    }
-
     public double getRadius(){
-        return getEuclideanDistance(origin,neighbors.get(0));
+        return origin.getEuclideanDistance(neighbors.get(0));
     }
 
     @Override

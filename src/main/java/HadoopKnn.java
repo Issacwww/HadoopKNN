@@ -104,40 +104,38 @@ public class HadoopKnn {
         job3.setJarByClass(HadoopKnn.class);
         job3.setMapperClass(KnnCrossCellMapper.class);
         job3.setReducerClass(KnnCrossCellReducer.class);
-        job3.setNumReduceTasks(1);
+        job3.setNumReduceTasks(R);
         job3.setInputFormatClass(TextInputFormat.class);
         job3.setMapOutputKeyClass(Text.class);
-        job3.setMapOutputValueClass(Point.class);
+        job3.setMapOutputValueClass(Text.class);
         job3.setOutputKeyClass(Text.class);
-        job3.setOutputValueClass(PointArrayWritable.class);
-        FileInputFormat.setInputPaths(job3, new Path(inputPath));
-        FileOutputFormat.setOutputPath(job3, new Path(outputPath));
+        job3.setOutputValueClass(Text.class);
+        FileInputFormat.setInputPaths(job3, new Path(outputPath,"out2/part*"));
         FileOutputFormat.setOutputPath(job3, new Path(outputPath,"out3"));
-//        if (!job3.waitForCompletion(true)) {
-//            LOG.error("Running Job 3 Wrong");
-//            System.exit(1);
-//        }
+        if (!job3.waitForCompletion(true)) {
+            LOG.error("Running Job 3 Wrong");
+            System.exit(1);
+        }
 
         LOG.info("****************     STEP 4     ********************");
 
-//        Job job4 = Job.getInstance(conf,"Integration");
-//        LOG.info("job4 setting");
-//        job4.setJarByClass(HadoopKnn.class);
-//        job4.setMapperClass(CellCountMapper.class);
-//        job4.setReducerClass(CellCountReducer.class);
-//        job4.setNumReduceTasks(1);
-//        job4.setInputFormatClass(TextInputFormat.class);
-//        job4.setMapOutputKeyClass(Text.class);
-//        job4.setMapOutputValueClass(Point.class);
-//        job4.setOutputKeyClass(Text.class);
-//        job4.setOutputValueClass(PointArrayWritable.class);
-//        FileInputFormat.setInputPaths(job4, new Path(inputPath));
-//        FileOutputFormat.setOutputPath(job4, new Path(outputPath));
-//        FileOutputFormat.setOutputPath(job4, new Path(outputPath,"out4"));
-//        if (!job4.waitForCompletion(true)) {
-//            LOG.error("Running Job 4 Wrong");
-//            System.exit(1);
-//        }
+        Job job4 = Job.getInstance(conf,"Integration");
+        LOG.info("Job4 setting");
+        job4.setJarByClass(HadoopKnn.class);
+        job4.setMapperClass(IntegrationMapper.class);
+        job4.setReducerClass(IntegrationReducer.class);
+        job4.setNumReduceTasks(1);
+        job4.setInputFormatClass(TextInputFormat.class);
+        job4.setMapOutputKeyClass(Text.class);
+        job4.setMapOutputValueClass(Text.class);
+        job4.setOutputKeyClass(Point.class);
+        job4.setOutputValueClass(PointArrayWritable.class);
+        FileInputFormat.setInputPaths(job4, new Path(outputPath,"out3/part*"));
+        FileOutputFormat.setOutputPath(job4, new Path(outputPath,"out4"));
+        if (!job4.waitForCompletion(true)) {
+            LOG.error("Running Job 4 Wrong");
+            System.exit(1);
+        }
 
         LOG.info("All jobs succeed!");
         System.exit(0);

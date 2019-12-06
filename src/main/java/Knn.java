@@ -19,7 +19,7 @@ public class Knn {
                 if (origin.equals(point)) continue;
                 if(distance.containsKey(origin)){
                     PriorityQueue<PointDetail> queue = distance.get(origin);
-                    PointDetail detail = new PointDetail(point, getEuclideanDistance(origin, point));
+                    PointDetail detail = new PointDetail(point, origin.getEuclideanDistance(point));
                     if (queue.size() < k) {
                         queue.offer(detail);
                     } else if (queue.peek().distance > detail.distance) {
@@ -36,15 +36,11 @@ public class Knn {
                                     return -1;
                                 }
                             });
-                    queue.offer(new PointDetail(point,getEuclideanDistance(origin,point)));
+                    queue.offer(new PointDetail(point,origin.getEuclideanDistance(point)));
                     distance.put(origin, queue);
                 }
             }
         }
-    }
-
-    private double getEuclideanDistance(Point origin, Point neighbor){
-        return Math.sqrt(Math.pow((origin.x - neighbor.x),2) + Math.pow((origin.y - neighbor.y),2));
     }
 
     public ArrayList<PointTuple> getKnnPoints(){

@@ -77,7 +77,8 @@ public class QTree {
 
     private Node findNodeByCoords(Node node, Point point) {
         if(node.isLeave) {
-            node.points.add(point);
+            if(point.isValid())
+                node.points.add(point);
             return node;
         }
         double midX = node.x + node.sideLen / 2, midY =  node.y + node.sideLen / 2;

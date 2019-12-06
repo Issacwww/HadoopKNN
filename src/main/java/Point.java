@@ -26,6 +26,14 @@ public class Point extends ObjectWritable {
         this.x = Double.parseDouble(pointInfo[1]);
         this.y = Double.parseDouble(pointInfo[2]);
     }
+
+    public boolean isValid(){
+        return !this.id.equals("TEST");
+    }
+
+    public double getEuclideanDistance(Point neighbor){
+        return Math.sqrt(Math.pow((x - neighbor.x),2) + Math.pow((y - neighbor.y),2));
+    }
     @Override
     public String toString() {
         return "("+id+","+x+","+y+")";
