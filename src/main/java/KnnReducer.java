@@ -13,7 +13,8 @@ public class KnnReducer extends Reducer<Text, Text, Point, Text> {
         K = conf.getInt("K", 3);
     }
     public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        HashSet<Point> pointsInCell = PointArrayWritable.praseTextIntoPoints(values);
+        HashSet<Point> pointsInCell = PointArrayWritable.parseTextIntoPoints(values);
+        //run knn for these points
         Knn knn = new Knn(pointsInCell, K);
         ArrayList<PointTuple> resInCell = knn.getKnnPoints();
         for(PointTuple res:resInCell){

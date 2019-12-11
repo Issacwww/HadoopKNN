@@ -18,7 +18,7 @@ public class PointArrayWritable extends ArrayWritable {
         set(points);
     }
 
-    public static HashSet<Point> praseTextIntoPoints(Iterable<Text> values) {
+    public static HashSet<Point> parseTextIntoPoints(Iterable<Text> values) {
         HashSet<Point> pointsInCell = new HashSet<>();
         for (Text value : values) {
             String[] points = value.toString().split("#");

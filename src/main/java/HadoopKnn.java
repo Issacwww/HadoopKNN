@@ -69,6 +69,8 @@ public class HadoopKnn {
             LOG.error("Running Job 1 Wrong");
             System.exit(1);
         }
+
+        //Perform the cell merging based on the output of output1
         QTree qTree = new QTree(N, S);
         String mergedPoints = "data/mergedPoints";
         String mergedQTree = treeMerger(qTree, K, conf.get("fs.defaultFS"),
@@ -146,21 +148,22 @@ public class HadoopKnn {
     public static String treeMerger(QTree qTree, int K, String hdfsuri, Path stepOneOut, Path mergedPoints) throws IOException {
         Configuration conf = new Configuration();
         Gson gson = new Gson();
-//        // Set FileSystem URI
+        // Set FileSystem URI
         conf.set("fs.defaultFS", hdfsuri);
-//        // Because of Maven
+        // Because of Maven
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-//        // Set HADOOP user
-//        System.setProperty("HADOOP_USER_NAME", "hdfs");
-//        System.setProperty("hadoop.home.dir", "/");
+        // Set HADOOP user
         //Get the filesystem - HDFS
         FileSystem fs = FileSystem.get(URI.create(hdfsuri), conf);
         //Init input stream
         FSDataInputStream inputStream = fs.open(stepOneOut);
         //Classical input stream usage
         String out = IOUtils.toString(inputStream, "UTF-8");
+
         String[] lines = out.split("\n");
+
+        // Find the cell who contains less than K points
         Queue<String> toMerge = new LinkedList<>();
         for (String line : lines) {
             String[] tmp = line.split("\t");
@@ -170,8 +173,8 @@ public class HadoopKnn {
                 toMerge.add(n.id);
             }
         }
-//        LOG.info("Step1 Before Merge");
-//        qTree.display();
+
+        // Using BFS to traverse the to merge node, and merge the treeNode recursively
         while (!toMerge.isEmpty()) {
             String id = toMerge.poll();
             Node n = qTree.findNodeById(id);
@@ -184,9 +187,8 @@ public class HadoopKnn {
             }
         }
 
+        // write the merged cell and points to HDFS
         HashMap<String, String> leavesPoints = qTree.getLeavesPoints(true);
-        //TODO: write the data to HDFS
-        //Init output stream
         FSDataOutputStream outputStream = fs.create(mergedPoints);
         for (Map.Entry<String, String> entry : leavesPoints.entrySet()) {
             //Cassical output stream usage
@@ -195,7 +197,7 @@ public class HadoopKnn {
         outputStream.close();
         LOG.info("End Write file into hdfs");
         LOG.info("Merged, transfer to gson");
-        //Only save the structure
+        // serialize the structure of the tree using gson and store it
         String gsonStr = gson.toJson(qTree, QTree.class);
         return gsonStr;
     }

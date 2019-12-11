@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashSet;
 
 public class KnnMapper extends Mapper<Object, Text, Text, Text> {
+    //Compute Knn with in a Cell
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         HashSet<Point> pointList = new HashSet<>();
         String[] line = value.toString().split("\t");
@@ -16,6 +17,7 @@ public class KnnMapper extends Mapper<Object, Text, Text, Text> {
         Text cellId = new Text();
         cellId.set(line[0]);
         PointArrayWritable out = new PointArrayWritable(pointList);
+        // map points list with cellid
         context.write(cellId, new Text(out.toString()));
     }
 }

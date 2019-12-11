@@ -15,6 +15,7 @@ public class KnnCrossCellReducer extends Reducer<Text, Text, Point, Text> {
     }
 
     public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        //update the knn and reduce
         for(Text value: values) {
             String[] inputs = value.toString().split("#");
             Point origin = new Point(inputs[0]);

@@ -21,6 +21,7 @@ public class KnnCrossCellMapper extends Mapper<Object, Text, Text, Text> {
     }
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+        //map by point Id with its neighbors
         String[] knnOutput = value.toString().split("\t");
         Point originPoint = new Point(knnOutput[0]);
         String[] cellIdAndNeighbors = knnOutput[1].split("#");
@@ -30,9 +31,7 @@ public class KnnCrossCellMapper extends Mapper<Object, Text, Text, Text> {
         for (int i = 1; i <= K; i++) {
             neighbors = neighbors.concat("#" + cellIdAndNeighbors[i]);
         }
-        // check boundary in 8 direction
-//        HashSet<Node> neighborNodes = getAllCellIds(originPoint, farthest);
-//        boolean notCrossBoundary = true;
+        // check boundary cross
         boolean notCrossBoundary = notCrossBoundary(originPoint, farthest, originNode);
         if (notCrossBoundary) {
             cellId.set(originNode.id);
@@ -43,6 +42,7 @@ public class KnnCrossCellMapper extends Mapper<Object, Text, Text, Text> {
                 if (!node.equals(originNode.id)) {
                     notCrossBoundary = false;
                     cellId.set(node);
+                    //map by cellId with origin Point and its neighbors
                     context.write(cellId, new Text(originPoint.toString() + neighbors + "#" + notCrossBoundary));
                 }
             }
@@ -61,22 +61,4 @@ public class KnnCrossCellMapper extends Mapper<Object, Text, Text, Text> {
                 && (y<py-radius)
                 && (y+len > py+radius);
     }
-
-    private HashSet<Node> getAllCellIds(Point originPoint, Point farthest) {
-        double radius = originPoint.getEuclideanDistance(farthest);
-        HashSet<Node> cellIds = new HashSet<>();
-        double x = originPoint.x;
-        double y = originPoint.y;
-        double edge = Math.sin(Math.toRadians(45.0)) * radius;
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x, y + radius)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x + edge, y + edge)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x + radius, y)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x + edge, y - edge)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x, y - radius)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x - edge, y - edge)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x - radius, y)));
-        cellIds.add(qTree.findNodeByCoords(new Point("TEST", x - edge, y + edge)));
-        return cellIds;
-    }
-
 }

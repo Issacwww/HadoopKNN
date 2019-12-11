@@ -139,22 +139,10 @@ public class QTree {
         int self = Character.getNumericValue(node.id.charAt(node.id.length() - 1));
         int[] order = map[self];
         Node[] siblings = findSiblings(node, order);
-//        if (siblings[3].isLeave) {
-//            res.add(siblings[3].id);
-//        } else {
-            findDiagonalCells(siblings[3], order, res);
-//        }
-//        if (siblings[1].isLeave) {
-//            res.add(siblings[1].id);
-//        } else {
-            findBackDiagonalCells(siblings[1], order, 2, res);
-//        }
+        findDiagonalCells(siblings[3], order, res);
+        findBackDiagonalCells(siblings[1], order, 2, res);
+        findBackDiagonalCells(siblings[2], order,1, res);
 
-//        if (siblings[2].isLeave) {
-//            res.add(siblings[2].id);
-//        } else {
-            findBackDiagonalCells(siblings[2], order,1, res);
-//        }
     }
 
     private void findDiagonalCells(Node node, int[] order, HashSet<String> res) {
@@ -172,7 +160,6 @@ public class QTree {
         }
         findBackDiagonalCells(node.children.get(order[0]),order, order[pattern],res);
         findBackDiagonalCells(node.children.get(order[pattern]),order, order[pattern],res);
-
     }
 
     private Node[] findSiblings(Node node, int[] order) {
@@ -182,34 +169,4 @@ public class QTree {
             siblings[i] = children.get(i);
         return siblings;
     }
-
-    public static void main(String[] args) {
-        QTree qt = new QTree(1, 20);
-        qt.findNodeByCoords(new Point("0", 16.6, 15));
-        qt.findNodeByCoords(new Point("1", 2, 4));
-        Gson gson = new Gson();
-
-        System.out.println("Init tree");
-        qt.display(qt.root);
-//        System.out.println("Find parent of 02:"+qt.findNodeById(qt.root.children.get(2).getParentId()));
-
-//        String gsonStr = gson.toJson(qt,QTree.class);
-//        System.out.println("To Gson: "+gsonStr);
-//        QTree qt2 = gson.fromJson(gsonStr,QTree.class);
-//        System.out.println("Decode Gson");
-//        qt2.display(qt2.root);
-//
-//        System.out.println("Merge Tree");
-//        qt.merge(qt.root);
-//        qt.display(qt.root);
-//
-//        gsonStr = gson.toJson(qt,QTree.class);
-//        System.out.println("To Gson: "+gsonStr);
-//        qt2 = gson.fromJson(gsonStr,QTree.class);
-//        System.out.println("Decode Gson");
-//        qt2.display(qt2.root);
-
-    }
-
-
 }

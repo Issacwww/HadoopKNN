@@ -4,11 +4,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.util.HashSet;
-
+//integrate the result
 public class IntegrationMapper extends Mapper <Object, Text, Text, Text>{
 
     private int K;
-
     protected void setup(Context context) throws IOException,InterruptedException {
         Configuration conf = context.getConfiguration();
         K = conf.getInt("K", 3);
@@ -24,6 +23,7 @@ public class IntegrationMapper extends Mapper <Object, Text, Text, Text>{
             pointList.add(point);
         }
         PointArrayWritable out = new PointArrayWritable(pointList);
+        // map by point with its neighbor
         context.write(new Text(originPoint.toString()), new Text(out.toString()));
     }
 

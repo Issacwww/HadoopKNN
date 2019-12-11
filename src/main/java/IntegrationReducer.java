@@ -14,9 +14,10 @@ public class IntegrationReducer extends Reducer<Text, Text, Point, PointArrayWri
     }
 
     public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        HashSet<Point> pointsInCell = PointArrayWritable.praseTextIntoPoints(values);
+        HashSet<Point> pointsInCell = PointArrayWritable.parseTextIntoPoints(values);
         Point originPoint = new Point(key.toString());
         PointTuple result = PointTuple.getResult(originPoint, pointsInCell, K);
+        //reduce the final result
         context.write(originPoint, new PointArrayWritable(result.getNeighbors()));
     }
 
